@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="9" author="mironov.rs">
+        <sql splitStatements="false">
+            -- 1. Триггер проверки даты приема
+            CREATE OR REPLACE FUNCTION check_hire_date_func()
+            RETURNS TRIGGER AS $$
+            BEGIN
+                IF NEW.hire_date > CURRENT_DATE THEN
+                    RAISE EXCEPTION 'ERROR: Hire date cannot be in the future. Date: %', NEW.hire_date;
+            END IF;
+
+                IF NEW.hire_date &lt; '1990-01-01' THEN
+                    RAISE EXCEPTION 'ERROR: Hire date cannot be earlier than 1990-01-01. Date: %', NEW.hire_date;
+            END IF;
+
+            RETURN NEW;
+            END;
+            $$ LANGUAGE plpgsql;
+
+            DROP TRIGGER IF EXISTS check_hire_date ON employee;
+
+            CREATE TRIGGER check_hire_date
+                BEFORE INSERT OR UPDATE ON employee
+                                     FOR EACH ROW
+                                     EXECUTE FUNCTION check_hire_date_func();
+        </sql>
+    </changeSet>
+
+    <changeSet id="10" author="mironov.rs">
+        <sql splitStatements="false">
+            -- 2. Триггер проверки пустых значений ФИО
+            CREATE OR REPLACE FUNCTION check_fio_not_empty()
+            RETURNS TRIGGER AS $$
+            BEGIN
+                IF TRIM(NEW.last_name) = '' OR NEW.last_name IS NULL THEN
+                    RAISE EXCEPTION 'ERROR: Last name cannot be empty';
+            END IF;
+
+                IF TRIM(NEW.first_name) = '' OR NEW.first_name IS NULL THEN
+                    RAISE EXCEPTION 'ERROR: First name cannot be empty';
+            END IF;
+
+            RETURN NEW;
+            END;
+            $$ LANGUAGE plpgsql;
+
+            DROP TRIGGER IF EXISTS check_fio ON employee;
+
+            CREATE TRIGGER check_fio
+                BEFORE INSERT OR UPDATE ON employee
+                                     FOR EACH ROW
+                                     EXECUTE FUNCTION check_fio_not_empty();
+        </sql>
+    </changeSet>
+</databaseChangeLog>

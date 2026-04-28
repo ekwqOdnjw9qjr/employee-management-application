@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${trainingId != null} ? 'Edit Training' : 'Create Training'"></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">EMS</a>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 th:text="${trainingId != null} ? 'Edit Training' : 'Create Training'"></h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" th:action="${trainingId != null} ? '/trainings/edit/' + ${trainingId} : '/trainings/create'"
+                          th:object="${trainingRequest}">
+
+                        <div class="mb-3">
+                            <label class="form-label">Employee *</label>
+                            <select class="form-control" th:field="*{employeeId}" required>
+                                <option value="">Select Employee</option>
+                                <option th:each="emp : ${employees}" th:value="${emp.employeeId}"
+                                        th:text="${emp.lastName} + ' ' + ${emp.firstName} + ' (' + ${emp.position} + ')'"></option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Course Name *</label>
+                            <input type="text" class="form-control" th:field="*{courseName}" required
+                                   placeholder="e.g., Java Advanced, Leadership Skills, Project Management">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Organization *</label>
+                            <input type="text" class="form-control" th:field="*{organization}" required
+                                   placeholder="e.g., Coursera, Udemy, Internal Training">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Start Date</label>
+                                <input type="date" class="form-control" th:field="*{startDate}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">End Date</label>
+                                <input type="date" class="form-control" th:field="*{endDate}">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Status</label>
+                            <select class="form-control" th:field="*{status}">
+                                <option value="PLANNED">Planned</option>
+                                <option value="IN_PROGRESS">In Progress</option>
+                                <option value="COMPLETED">Completed</option>
+                                <option value="CANCELLED">Cancelled</option>
+                            </select>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <a href="/trainings" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

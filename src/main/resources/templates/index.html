@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .navbar-brand { font-weight: bold; }
+        .footer { background-color: #f5f5f5; padding: 20px 0; margin-top: 50px; }
+        .card { transition: transform 0.2s; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .card-icon { font-size: 2.5rem; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">EMS</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="/departments">Departments</a></li>
+                <li class="nav-item"><a class="nav-link" href="/employees">Employees</a></li>
+                <li class="nav-item"><a class="nav-link" href="/tasks">Tasks</a></li>
+                <li class="nav-item"><a class="nav-link" href="/histories">Histories</a></li>
+                <li class="nav-item"><a class="nav-link" href="/assignments">Assignments</a></li>
+                <li class="nav-item"><a class="nav-link" href="/evaluations">Evaluations</a></li>
+                <li class="nav-item"><a class="nav-link" href="/trainings">Trainings</a></li>
+                <li class="nav-item"><a class="nav-link" href="/queries">Query/Procedure</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+        <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="jumbotron bg-light p-5 rounded">
+        <h1 class="display-4">Employee Management System</h1>
+        <hr class="my-4">
+
+        <div class="row mt-5">
+            <div class="col-md-3 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Departments</h5>
+                        <p class="card-text">Manage company departments, floors, and structure</p>
+                        <a href="/departments" class="btn btn-primary">Go to Departments</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Employees</h5>
+                        <p class="card-text">Manage employee information, positions, and assignments</p>
+                        <a href="/employees" class="btn btn-primary">Go to Employees</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Tasks</h5>
+                        <p class="card-text">Create and manage tasks, deadlines, and statuses</p>
+                        <a href="/tasks" class="btn btn-primary">Go to Tasks</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Histories</h5>
+                        <p class="card-text">Track employee change history and events</p>
+                        <a href="/histories" class="btn btn-primary">Go to Histories</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-2">
+            <div class="col-md-3 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Assignments</h5>
+                        <p class="card-text">Manage task assignments and employee roles</p>
+                        <a href="/assignments" class="btn btn-primary">Go to Assignments</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Evaluations</h5>
+                        <p class="card-text">Track employee performance and KPI scores</p>
+                        <a href="/evaluations" class="btn btn-primary">Go to Evaluations</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Trainings</h5>
+                        <p class="card-text">Manage employee training and certifications</p>
+                        <a href="/trainings" class="btn btn-primary">Go to Trainings</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Query/Procedure</h5>
+                        <p class="card-text">Execute SQL queries and stored procedures</p>
+                        <a href="/queries" class="btn btn-primary">Go to Queries</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

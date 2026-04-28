@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="2" author="mironov.rs">
+        <sql>
+            CREATE TABLE employee (
+                                      employee_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                                      last_name VARCHAR(50),
+                                      first_name VARCHAR(50),
+                                      middle_name VARCHAR(50),
+                                      position VARCHAR(100) NOT NULL,
+                                      phone VARCHAR(20) NOT NULL,
+                                      salary DECIMAL(10,2) NOT NULL,
+                                      hire_date DATE NOT NULL,
+                                      photo VARCHAR(255) NOT NULL,
+                                      office VARCHAR(20) NOT NULL,
+                                      department_id BIGINT NOT NULL,
+                                      CONSTRAINT FK_employee_department FOREIGN KEY (department_id)
+                                          REFERENCES department(department_id)
+            );
+        </sql>
+    </changeSet>
+</databaseChangeLog>

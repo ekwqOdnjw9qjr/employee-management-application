@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="7" author="mironov.rs">
+        <sql>
+            CREATE TABLE training (
+                                      training_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                                      course_name VARCHAR(150) NOT NULL,
+                                      start_date DATE,
+                                      end_date DATE,
+                                      status VARCHAR(50),
+                                      organization VARCHAR(150) NOT NULL,
+                                      employee_id BIGINT NOT NULL,
+                                      CONSTRAINT FK_training_employee FOREIGN KEY (employee_id)
+                                          REFERENCES employee(employee_id)
+                                          ON DELETE CASCADE
+            );
+        </sql>
+    </changeSet>
+</databaseChangeLog>

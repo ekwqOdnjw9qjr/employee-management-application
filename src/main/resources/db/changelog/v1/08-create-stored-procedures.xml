@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="
+                   http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="8" author="mironov.rs">
+        <sql splitStatements="false"><![CDATA[
+            -- liquibase formatted sql
+
+-- changeset id="8" author="mironov.rs"
+-- Хранимые процедуры для PostgreSQL
+
+-- =========================================
+-- 1. Упорядочение по полям (ФИО / отдел)
+-- =========================================
+            CREATE OR REPLACE FUNCTION ordering_by_fields(order_by VARCHAR DEFAULT 'fio')
+RETURNS TABLE(
+    department_name VARCHAR,
+    full_name VARCHAR,
+    employee_position VARCHAR,
+    phone VARCHAR,
+    salary DECIMAL,
+    floor INT
+) AS $$
+            BEGIN
+    IF order_by = 'fio' THEN
+        RETURN QUERY
+            SELECT
+                d.name::VARCHAR,
+                    CONCAT(e.last_name, ' ', e.first_name, ' ', COALESCE(e.middle_name, ''))::VARCHAR,
+                    e.position::VARCHAR,
+                    e.phone::VARCHAR,
+                    e.salary,
+                d.floor
+            FROM employee e
+                     INNER JOIN department d ON e.department_id = d.department_id
+            ORDER BY e.last_name, e.first_name, e.middle_name;
+
+            ELSIF order_by = 'department' THEN
+        RETURN QUERY
+            SELECT
+                d.name::VARCHAR,
+                    CONCAT(e.last_name, ' ', e.first_name, ' ', COALESCE(e.middle_name, ''))::VARCHAR,
+                    e.position::VARCHAR,
+                    e.phone::VARCHAR,
+                    e.salary,
+                d.floor
+            FROM department d
+                     LEFT JOIN employee e ON e.department_id = d.department_id
+            ORDER BY d.name, e.last_name, e.first_name;
+            ELSE
+        RAISE EXCEPTION 'Invalid order_by parameter. Use fio or department';
+            END IF;
+            END;
+$$ LANGUAGE plpgsql;
+
+-- =========================================
+-- 2. Поиск сотрудников на одном этаже
+-- =========================================
+CREATE OR REPLACE FUNCTION find_employees_by_floor(floor_num INT)
+RETURNS TABLE(
+    full_name VARCHAR,
+    employee_position VARCHAR,
+    phone VARCHAR,
+    department_name VARCHAR,
+    floor INT,
+    office VARCHAR
+) AS $$
+            BEGIN
+            RETURN QUERY
+            SELECT
+                CONCAT(e.last_name, ' ', e.first_name, ' ', COALESCE(e.middle_name, ''))::VARCHAR,
+                    e.position::VARCHAR,
+                    e.phone::VARCHAR,
+                    d.name::VARCHAR,
+                    d.floor,
+                e.office::VARCHAR
+            FROM employee e
+                     INNER JOIN department d ON e.department_id = d.department_id
+            WHERE d.floor = floor_num
+            ORDER BY e.last_name, e.first_name;
+            END;
+$$ LANGUAGE plpgsql;
+
+-- =========================================
+-- 3. Информация о сотруднике и контакты
+-- =========================================
+CREATE OR REPLACE FUNCTION get_employee_info(
+    p_last_name VARCHAR DEFAULT NULL,
+    p_first_name VARCHAR DEFAULT NULL,
+    p_middle_name VARCHAR DEFAULT NULL
+)
+RETURNS TABLE(
+    full_name VARCHAR,
+    employee_position VARCHAR,
+    contact_phone VARCHAR,
+    salary DECIMAL,
+    hire_date DATE,
+    office VARCHAR,
+    department_name VARCHAR,
+    floor INT
+) AS $$
+            BEGIN
+            RETURN QUERY
+            SELECT
+                CONCAT(e.last_name, ' ', e.first_name, ' ', COALESCE(e.middle_name, ''))::VARCHAR,
+                    e.position::VARCHAR,
+                    e.phone::VARCHAR,
+                    e.salary,
+                e.hire_date,
+                e.office::VARCHAR,
+                    d.name::VARCHAR,
+                    d.floor
+            FROM employee e
+                     INNER JOIN department d ON e.department_id = d.department_id
+            WHERE (p_last_name IS NULL OR e.last_name ILIKE '%' || p_last_name || '%')
+              AND (p_first_name IS NULL OR e.first_name ILIKE '%' || p_first_name || '%')
+              AND (p_middle_name IS NULL OR e.middle_name ILIKE '%' || p_middle_name || '%');
+            END;
+$$ LANGUAGE plpgsql;
+
+-- =========================================
+-- 4. Статистика по сотрудникам и зарплате
+-- =========================================
+CREATE OR REPLACE FUNCTION calculate_department_stats()
+RETURNS TABLE(
+    description VARCHAR,
+    total_employees BIGINT,
+    total_salary_fund DECIMAL
+) AS $$
+            BEGIN
+            RETURN QUERY
+            SELECT
+                'Данные по сотрудникам и зарплате'::VARCHAR,
+                    COUNT(employee_id)::BIGINT,
+                    COALESCE(SUM(salary), 0)::DECIMAL
+            FROM employee;
+            END;
+$$ LANGUAGE plpgsql;
+]]></sql>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Queries</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .navbar-brand { font-weight: bold; }
+        .footer { background-color: #f5f5f5; padding: 20px 0; margin-top: 50px; }
+        .card { transition: transform 0.2s; margin-bottom: 20px; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .list-group-item { border-left: none; border-right: none; }
+        .list-group-item:first-child { border-top: none; }
+        .list-group-item:last-child { border-bottom: none; }
+        .btn-sm-group { display: flex; gap: 10px; margin-top: 10px; }
+        .btn-sm-group .btn { flex: 1; }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">EMS</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="/departments">Departments</a></li>
+                <li class="nav-item"><a class="nav-link" href="/employees">Employees</a></li>
+                <li class="nav-item"><a class="nav-link" href="/tasks">Tasks</a></li>
+                <li class="nav-item"><a class="nav-link" href="/histories">Histories</a></li>
+                <li class="nav-item"><a class="nav-link" href="/assignments">Assignments</a></li>
+                <li class="nav-item"><a class="nav-link" href="/evaluations">Evaluations</a></li>
+                <li class="nav-item"><a class="nav-link" href="/trainings">Trainings</a></li>
+                <li class="nav-item"><a class="nav-link" href="/queries">Query/Procedure</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+        <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="jumbotron bg-light p-5 rounded">
+        <h1 class="display-4">Database Queries</h1>
+        <p class="lead">Execute SQL queries and stored procedures</p>
+        <hr class="my-4">
+
+        <div class="row mt-4">
+            <!-- 7 Обычных запросов -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                    </div>
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <a href="/queries/employees-ordered" class="text-decoration-none">1. Упорядочение по полям</a>
+                            </li>
+                            <li class="list-group-item">
+                                <form action="/queries/employees-by-floor" method="get" class="d-flex gap-2">
+                                    <input type="number" name="floor" class="form-control" placeholder="Этаж" value="3" required>
+                                    <button type="submit" class="btn btn-primary btn-sm">2. Поиск по этажу</button>
+                                </form>
+                            </li>
+                            <li class="list-group-item">
+                                <form action="/queries/employee-full-info" method="get" class="row g-2">
+                                    <div class="col-4"><input type="text" name="lastName" class="form-control form-control-sm" placeholder="Фамилия"></div>
+                                    <div class="col-4"><input type="text" name="firstName" class="form-control form-control-sm" placeholder="Имя"></div>
+                                    <div class="col-4"><input type="text" name="middleName" class="form-control form-control-sm" placeholder="Отчество"></div>
+                                    <div class="col-12 mt-2"><button type="submit" class="btn btn-primary btn-sm w-100">3. Информация о сотруднике</button></div>
+                                </form>
+                            </li>
+                            <li class="list-group-item">
+                                <form action="/queries/employee-contact" method="get" class="d-flex gap-2">
+                                    <input type="text" name="lastName" class="form-control" placeholder="Фамилия" required>
+                                    <button type="submit" class="btn btn-info btn-sm">4. Контакты</button>
+                                </form>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="/queries/employee-count" class="text-decoration-none">5. Количество сотрудников по отделам</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="/queries/salary-fund" class="text-decoration-none">6. Фонд зарплаты по отделам</a>
+                            </li>
+                            <li class="list-group-item">
+                                <form action="/queries/delete-fired" method="post">
+                                    <button type="submit" class="btn btn-danger btn-sm w-100" onclick="return confirm('Удалить уволенных?')">7. Удалить уволенных</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                         Хранимые процедуры
+                    </div>
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <div class="btn-sm-group">
+                                    <a href="/queries/procedure-ordered?orderBy=fio" class="btn btn-outline-primary btn-sm">По ФИО</a>
+                                    <a href="/queries/procedure-ordered?orderBy=department" class="btn btn-outline-primary btn-sm">По отделам</a>
+                                </div>
+                                <small class="text-muted">1. ordering_by_fields</small>
+                            </li>
+                            <li class="list-group-item">
+                                <form action="/queries/procedure-floor" method="get" class="d-flex gap-2">
+                                    <input type="number" name="floor" class="form-control" placeholder="Этаж" value="3" required>
+                                    <button type="submit" class="btn btn-success btn-sm">2. find_employees_by_floor</button>
+                                </form>
+                            </li>
+                            <li class="list-group-item">
+                                <form action="/queries/procedure-employee-info" method="get" class="row g-2">
+                                    <div class="col-4"><input type="text" name="lastName" class="form-control form-control-sm" placeholder="Фамилия"></div>
+                                    <div class="col-4"><input type="text" name="firstName" class="form-control form-control-sm" placeholder="Имя"></div>
+                                    <div class="col-4"><input type="text" name="middleName" class="form-control form-control-sm" placeholder="Отчество"></div>
+                                    <div class="col-12 mt-2"><button type="submit" class="btn btn-success btn-sm w-100">3. get_employee_info</button></div>
+                                </form>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="/queries/procedure-stats" class="text-decoration-none">4. calculate_department_stats</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="container text-center">
+        <span class="text-muted">Employee Management System © 2024</span>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

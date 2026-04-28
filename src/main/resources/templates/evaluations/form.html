@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${evaluationId != null} ? 'Edit Evaluation' : 'Create Evaluation'"></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">EMS</a>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 th:text="${evaluationId != null} ? 'Edit Evaluation' : 'Create Evaluation'"></h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" th:action="${evaluationId != null} ? '/evaluations/edit/' + ${evaluationId} : '/evaluations/create'"
+                          th:object="${evaluationRequest}">
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Employee *</label>
+                                <select class="form-control" th:field="*{employeeId}" required>
+                                    <option value="">Select Employee</option>
+                                    <option th:each="emp : ${employees}" th:value="${emp.employeeId}"
+                                            th:text="${emp.lastName} + ' ' + ${emp.firstName}"></option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Reviewer *</label>
+                                <select class="form-control" th:field="*{reviewerId}" required>
+                                    <option value="">Select Reviewer</option>
+                                    <option th:each="emp : ${employees}" th:value="${emp.employeeId}"
+                                            th:text="${emp.lastName} + ' ' + ${emp.firstName}"></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Evaluation Date *</label>
+                            <input type="date" class="form-control" th:field="*{evaluationDate}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">KPI *</label>
+                            <input type="text" class="form-control" th:field="*{kpi}" required
+                                   placeholder="e.g., Performance, Quality, Productivity, Teamwork">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Score (0-100) *</label>
+                            <input type="number" class="form-control" th:field="*{score}" required min="0" max="100">
+                            <small class="text-muted">0-59: Needs Improvement, 60-79: Good, 80-100: Excellent</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Comment</label>
+                            <textarea class="form-control" th:field="*{comment}" rows="3"
+                                      placeholder="Additional comments about the performance..."></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <a href="/evaluations" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

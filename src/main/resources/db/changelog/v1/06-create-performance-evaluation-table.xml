@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="6" author="mironov.rs">
+        <sql>
+            CREATE TABLE performance_evaluation (
+                                                    evaluation_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                                                    evaluation_date DATE NOT NULL,
+                                                    kpi VARCHAR(100) NOT NULL,
+                                                    score INT NOT NULL,
+                                                    comment TEXT,
+                                                    employee_id BIGINT NOT NULL,
+                                                    reviewer_id BIGINT NOT NULL,
+                                                    CONSTRAINT FK_evaluation_employee FOREIGN KEY (employee_id)
+                                                        REFERENCES employee(employee_id)
+                                                        ON DELETE CASCADE,
+                                                    CONSTRAINT FK_evaluation_reviewer FOREIGN KEY (reviewer_id)
+                                                        REFERENCES employee(employee_id)
+            );
+        </sql>
+    </changeSet>
+</databaseChangeLog>
