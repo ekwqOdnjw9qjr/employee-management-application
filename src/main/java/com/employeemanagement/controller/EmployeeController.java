@@ -2,6 +2,7 @@ package com.employeemanagement.controller;
 
 
 import com.employeemanagement.dto.request.EmployeeRequestDTO;
+import com.employeemanagement.dto.response.EmployeeResponseDTO;
 import com.employeemanagement.service.DepartmentService;
 import com.employeemanagement.service.EmployeeService;
 import jakarta.validation.Valid;
@@ -28,7 +29,6 @@ public class EmployeeController {
 
     @GetMapping("/create")
     public String showCreateForm(Model model) {
-        System.out.println("=== SHOW CREATE FORM ===");
         model.addAttribute("employeeRequest", new EmployeeRequestDTO());
         model.addAttribute("departments", departmentService.getAllDepartments());
         return "employees/form";
@@ -40,24 +40,21 @@ public class EmployeeController {
                                  Model model,
                                  RedirectAttributes redirectAttributes) {
 
-        System.out.println("=== CREATE EMPLOYEE CALLED ===");
-        System.out.println("Employee: " + employeeRequest);
-        System.out.println("Has errors: " + result.hasErrors());
-
+        if (employeeRequest.getPhoto() == null || employeeRequest.getPhoto().isEmpty()) {
+            employeeRequest.setPhoto("/images/default-avatar.png");
+        }
         if (result.hasErrors()) {
             result.getAllErrors().forEach(error -> {
-                System.out.println("Error: " + error);
+                System.out.println("Validation error: " + error.getDefaultMessage());
             });
             model.addAttribute("departments", departmentService.getAllDepartments());
             return "employees/form";
         }
 
         try {
-            employeeService.createEmployee(employeeRequest);
             redirectAttributes.addFlashAttribute("success", "Employee created successfully");
             return "redirect:/employees";
         } catch (Exception e) {
-            System.out.println("Exception: " + e.getMessage());
             e.printStackTrace();
             model.addAttribute("error", "Error creating employee: " + e.getMessage());
             model.addAttribute("departments", departmentService.getAllDepartments());

@@ -23,6 +23,7 @@ public class EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
     private final EmployeeMapper employeeMapper;
+    private final FileStorageService fileStorageService;
 
     public List<EmployeeResponseDTO> getAllEmployees() {
         log.info("Fetching all employees");
@@ -43,11 +44,27 @@ public class EmployeeService {
         Department department = departmentRepository.findById(requestDTO.getDepartmentId())
                 .orElseThrow(() -> new RuntimeException("Department not found"));
 
-        Employee employee = employeeMapper.toEntity(requestDTO);
+        Employee employee =  employeeMapper.toEntity(requestDTO);
+        employee.setLastName(requestDTO.getLastName());
+        employee.setFirstName(requestDTO.getFirstName());
+        employee.setMiddleName(requestDTO.getMiddleName());
+        employee.setPosition(requestDTO.getPosition());
+        employee.setPhone(requestDTO.getPhone());
+        employee.setSalary(requestDTO.getSalary());
+        employee.setHireDate(requestDTO.getHireDate());
+        employee.setOffice(requestDTO.getOffice());
         employee.setDepartment(department);
 
-        Employee saved = employeeRepository.save(employee);
-        return employeeMapper.toResponseDto(saved);
+        if (requestDTO.getPhotoFile() != null && !requestDTO.getPhotoFile().isEmpty()) {
+            String photoUrl = fileStorageService.storeFile(requestDTO.getPhotoFile(), "employee");
+            employee.setPhoto(photoUrl);
+        } else if (requestDTO.getPhoto() != null && !requestDTO.getPhoto().isEmpty()) {
+            employee.setPhoto(requestDTO.getPhoto());
+        } else {
+            employee.setPhoto("/images/default-avatar.png");
+        }
+        Employee savedEmployee = employeeRepository.save(employee);
+        return employeeMapper.toResponseDto(savedEmployee);
     }
 
     @Transactional
@@ -60,6 +77,15 @@ public class EmployeeService {
         Department department = departmentRepository.findById(requestDTO.getDepartmentId())
                 .orElseThrow(() -> new RuntimeException("Department not found"));
 
+        if (requestDTO.getPhotoFile() != null && !requestDTO.getPhotoFile().isEmpty()) {
+            if (employee.getPhoto() != null && !employee.getPhoto().equals("/images/default-avatar.png") && !employee.getPhoto().contains("default-avatar")) {
+                fileStorageService.deleteFile(employee.getPhoto());
+            }
+            String photoUrl = fileStorageService.storeFile(requestDTO.getPhotoFile(), "employee");
+            employee.setPhoto(photoUrl);
+        } else if (requestDTO.getPhoto() != null && !requestDTO.getPhoto().isEmpty()) {
+            employee.setPhoto(requestDTO.getPhoto());
+        }
         employee.setLastName(requestDTO.getLastName());
         employee.setFirstName(requestDTO.getFirstName());
         employee.setMiddleName(requestDTO.getMiddleName());
@@ -67,7 +93,6 @@ public class EmployeeService {
         employee.setPhone(requestDTO.getPhone());
         employee.setSalary(requestDTO.getSalary());
         employee.setHireDate(requestDTO.getHireDate());
-        employee.setPhoto(requestDTO.getPhoto());
         employee.setOffice(requestDTO.getOffice());
         employee.setDepartment(department);
 
@@ -78,9 +103,14 @@ public class EmployeeService {
     @Transactional
     public void deleteEmployee(Long id) {
         log.info("Deleting employee with id: {}", id);
-        if (!employeeRepository.existsById(id)) {
-            throw new RuntimeException("Employee not found");
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        if (employee.getPhoto() != null && !employee.getPhoto().equals("/images/default-avatar.png")) {
+            fileStorageService.deleteFile(employee.getPhoto());
         }
+
+
         employeeRepository.deleteById(id);
     }
 }

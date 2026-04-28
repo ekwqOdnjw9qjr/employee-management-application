@@ -20,9 +20,8 @@
                     <h3 th:text="${employeeId != null} ? 'Edit Employee' : 'Create New Employee'"></h3>
                 </div>
                 <div class="card-body">
-                    <!-- ВАЖНО: method="post" -->
                     <form method="post" th:action="${employeeId != null} ? '/employees/edit/' + ${employeeId} : '/employees/create'"
-                          th:object="${employeeRequest}">
+                          th:object="${employeeRequest}" enctype="multipart/form-data">
 
                         <div class="row">
                             <div class="col-md-4 mb-3">
@@ -74,10 +73,22 @@
                                 <input type="date" class="form-control" th:field="*{hireDate}" required>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Photo Path</label>
-                                <input type="text" class="form-control" th:field="*{photo}" placeholder="/photos/photo.jpg">
+                                <label class="form-label">Photo</label>
+                                <input type="file" class="form-control" name="photoFile" accept="image/*">
+                                <small class="text-muted">Max size: 5MB. Supported: JPG, PNG, GIF</small>
                             </div>
                         </div>
+
+                        <div th:if="${employeeId != null and employeeRequest.photo != null}" class="row">
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Current Photo</label>
+                                <div>
+                                    <img th:src="${employeeRequest.photo}" style="max-width: 150px; max-height: 150px;" alt="Employee photo" class="img-thumbnail">
+                                </div>
+                            </div>
+                        </div>
+
+                        <input type="hidden" th:field="*{photo}" value="/images/default-avatar.png">
 
                         <div class="d-flex justify-content-between">
                             <button type="submit" class="btn btn-primary">Save</button>

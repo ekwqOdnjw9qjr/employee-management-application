@@ -15,7 +15,7 @@
                                       phone VARCHAR(20) NOT NULL,
                                       salary DECIMAL(10,2) NOT NULL,
                                       hire_date DATE NOT NULL,
-                                      photo VARCHAR(255) NOT NULL,
+                                      photo VARCHAR(255),
                                       office VARCHAR(20) NOT NULL,
                                       department_id BIGINT NOT NULL,
                                       CONSTRAINT FK_employee_department FOREIGN KEY (department_id)

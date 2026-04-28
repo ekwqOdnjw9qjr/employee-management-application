@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -43,7 +45,6 @@ public class EmployeeRequestDTO {
     @PastOrPresent(message = "Hire date cannot be in the future")
     private LocalDate hireDate;
 
-    @NotBlank(message = "Photo path is required")
     private String photo;
 
     @NotBlank(message = "Office is required")
@@ -52,4 +53,6 @@ public class EmployeeRequestDTO {
 
     @NotNull(message = "Department ID is required")
     private Long departmentId;
+
+    private MultipartFile photoFile;
 }
