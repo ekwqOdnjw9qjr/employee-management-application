@@ -35,27 +35,20 @@ public class EmployeeController {
     }
 
     @PostMapping("/create")
-    public String createEmployee(@Valid @ModelAttribute("employeeRequest") EmployeeRequestDTO employeeRequest,
-                                 BindingResult result,
+    public String createEmployee(@ModelAttribute("employeeRequest") EmployeeRequestDTO employeeRequest,
                                  Model model,
                                  RedirectAttributes redirectAttributes) {
 
         if (employeeRequest.getPhoto() == null || employeeRequest.getPhoto().isEmpty()) {
             employeeRequest.setPhoto("/images/default-avatar.png");
         }
-        if (result.hasErrors()) {
-            result.getAllErrors().forEach(error -> {
-                System.out.println("Validation error: " + error.getDefaultMessage());
-            });
-            model.addAttribute("departments", departmentService.getAllDepartments());
-            return "employees/form";
-        }
 
         try {
+            EmployeeResponseDTO savedEmployee = employeeService.createEmployee(employeeRequest);
             redirectAttributes.addFlashAttribute("success", "Employee created successfully");
             return "redirect:/employees";
+
         } catch (Exception e) {
-            e.printStackTrace();
             model.addAttribute("error", "Error creating employee: " + e.getMessage());
             model.addAttribute("departments", departmentService.getAllDepartments());
             return "employees/form";
